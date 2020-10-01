@@ -109,6 +109,17 @@ pols_df =
   separate(mon, into = c("year", "month", "day")) %>%
   mutate(month=as.integer(month),
          month=month.abb[month]) %>%
-  mutate(president=case_when(prez_gop==1~'gop',prez_dem==1~'dem'))
+  mutate(president=case_when(prez_gop==1~'gop',prez_dem==1~'dem')) %>%
+  select(-prez_dem, -prez_gop, -day) %>%
+  select(year, month, everything())
+
+snp_df =
+  read_csv("./snp.csv") %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("year", "month", "day")) %>%
+  mutate(month=as.integer(month),
+         month=month.abb[month]) %>%
+  select(year, month, everything())
 ```
+
 
