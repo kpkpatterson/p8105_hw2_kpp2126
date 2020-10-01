@@ -73,7 +73,42 @@ NYCTransit_df =
   read_csv("./NYC_Transit_Subway_Entrance_And_Exit_Data.csv",) %>%
   janitor::clean_names() %>%
   select(line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>%
-  mutate(entry = as.logical(entry))
+  mutate(entry = case_when(entry == "YES" ~ "TRUE", entry == "NO" ~ "FALSE"),
+  entry=as.logical(entry))
 ```
 
-This dataset contains information about the NYC Transit entrance and exit data for each subway station in New York, NY. The dataset contains information on 
+This dataset contains information about the NYC Transit entrance and exit data for each subway station in New York, NY. The dataset contains information on station names and their coordinate locations, the train routes, entry only, entrance type, and ada compliance. There are a total of `r nrow(NYCTransit_df)` rows and `r ncol(NYCTransit_df)` columns in our final dataset. The data is tidy by its arrangement to its specific line and further breakdown to station name and routes that enter that station.
+
+How many distinct stations are there?
+```{r}
+NYCTransit_df %>%
+  distinct(station_name) %>%
+  count()
+```
+
+How many stations are ADA compliant?
+```{r}
+NYCTransit_df %>%
+  distinct(NYCTransit_df, ada == TRUE) %>%
+  filter(station_name) %>%
+  count()
+```
+What proportion of station entrances / exits without vending allow entrance?
+```{r}
+NYCTransit_df %>%
+  distinct(NYCTransit_df, vending == 'NO') %>% 
+  filter(entry == TRUE) %>%
+  count()
+```
+
+## Problem 3
+```{r}
+pols_df =
+  read_csv("./pols-month.csv") %>%
+  janitor::clean_names() %>%
+  separate(mon, into = c("year", "month", "day")) %>%
+  mutate(month=as.integer(month),
+         month=month.abb[month]) %>%
+  mutate(president=case_when(prez_gop==1~'gop',prez_dem==1~'dem'))
+```
+
